@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: trades
-        image: kraken-trades:dev
+        image: kraken_trades:dev
         imagePullPolicy: Never # Use the local image
         env:
         - name: KAFKA_BROKER_ADDRESS

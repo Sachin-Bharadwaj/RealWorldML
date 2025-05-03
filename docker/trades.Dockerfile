@@ -10,6 +10,8 @@ ENV UV_COMPILE_BYTECODE=1
 # Copy from the cache instead of linking since it's a mounted volume
 ENV UV_LINK_MODE=copy
 
+COPY services /app/services
+
 # Install the project's dependencies using the lockfile and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
@@ -28,10 +30,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
 
-# Run the FastAPI application by default
-# Uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
-# Uses `--host 0.0.0.0` to allow access from outside the container
 CMD ["uv", "run", "/app/services/trades/src/trades/main.py"]
 
-# at the enrty, keep the docker alive by sleeping for long time (for debugging file system)
-#CMD ["/bin/bash", "-c", "sleep 999999"]
+# If you want to debug the file system, uncomment the line below
+# This will keep the container running and allow you to exec into it
+# CMD ["/bin/bash", "-c", "sleep 999999"]

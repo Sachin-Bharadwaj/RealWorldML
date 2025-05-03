@@ -7,7 +7,7 @@ from config import settings
 
 
 def main(kafka_broker_address: str, kafka_topic_name: str, kraken_api: KrakenAPI):
-    app = Application(broker_address=kafka_broker_address, consumer_group="example")
+    app = Application(broker_address=kafka_broker_address)
 
     # Define a topic "my_topic" with JSON serialization
     topic = app.topic(name=kafka_topic_name, value_serializer="json")
@@ -23,18 +23,14 @@ def main(kafka_broker_address: str, kafka_topic_name: str, kraken_api: KrakenAPI
 
             for event in events:
                 # Serialize an event using3 the defined Topic
-                message = topic.serialize(  # key=event["id"],
-                    value=event.to_dict()
-                )
+                message = topic.serialize(key=event.product_id, value=event.to_dict())
 
                 # Produce a message into the Kafka topic
-                producer.produce(
-                    topic=topic.name,
-                    value=message.value,
-                    # key=message.key
-                )
+                producer.produce(topic=topic.name, value=message.value, key=message.key)
 
-                logger.info(f"Produced message: {message.value} to topic: {topic.name}")
+                logger.info(
+                    f"Produced message: {message.value} with key: {message.key} to topic: {topic.name}"
+                )
 
 
 if __name__ == "__main__":
